@@ -23,10 +23,14 @@ public class AnalyticsHelper {
     }
 
     public static void trackingEvent(String event, Map<String, String> args) {
-        Log.v("AAA", "event " + event);
         if (args == null) {
+            Log.v("AAA", "event " + event);
             MobclickAgent.onEvent(sContext, event);
         } else {
+            Log.v("AAA", "event " + event);
+            for (Map.Entry<String, String> entry : args.entrySet()) {
+                Log.v("AAA", entry.getKey() + "__" + entry.getValue());
+            }
             MobclickAgent.onEvent(sContext, event, args);
         }
 

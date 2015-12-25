@@ -6,6 +6,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+import java.util.HashMap;
+
 /**
  * Created by wangqi on 2015/12/25.
  */
@@ -45,7 +47,16 @@ public class AopEventTracking {
     public Object trackingJoinPoint(ProceedingJoinPoint joinPoint, EventTracking ann) throws Throwable {
         Object result = joinPoint.proceed();
 
-        AnalyticsHelper.trackingEvent(ann.eventId(), null);
+        if (ann.keys()[0].equals("[unimplemented]") || ann.values()[0].equals("[unimplemented]") || ann.keys() == null || ann.keys().length == 0 || ann.values() == null || ann.values().length == 0 || ann.keys().length != ann.values().length) {
+            AnalyticsHelper.trackingEvent(ann.eventId(), null);
+        } else {
+            HashMap<String, String> map = new HashMap<>();
+            for (int i = 0; i < ann.keys().length; i++) {
+                map.put(ann.keys()[i], ann.values()[i]);
+            }
+
+            AnalyticsHelper.trackingEvent(ann.eventId(), map);
+        }
 
         return result;
     }

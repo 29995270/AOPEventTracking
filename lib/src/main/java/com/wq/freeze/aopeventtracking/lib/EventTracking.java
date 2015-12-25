@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface EventTracking {
     String eventId();
+    String[] keys() default "[unimplemented]";
+    String[] values() default "[unimplemented]";
 }
