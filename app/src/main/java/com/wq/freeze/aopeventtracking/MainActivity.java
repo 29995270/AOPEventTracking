@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.wq.freeze.aopeventtracking.lib.EventTracking;
+import com.wq.freeze.aopeventtracking.lib.Init;
 
 public class MainActivity extends AppCompatActivity {
 
