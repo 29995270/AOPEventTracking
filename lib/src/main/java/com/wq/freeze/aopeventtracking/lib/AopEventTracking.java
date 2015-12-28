@@ -1,11 +1,15 @@
 package com.wq.freeze.aopeventtracking.lib;
 
+import android.app.Activity;
 import android.content.Context;
+
+import com.wq.freeze.aopeventtracking.lib.annotations.EventTracking;
+import com.wq.freeze.aopeventtracking.lib.annotations.PagePause;
+import com.wq.freeze.aopeventtracking.lib.annotations.PageResume;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -19,13 +23,29 @@ import java.util.HashMap;
 @Aspect
 public class AopEventTracking {
     private static final String TRACKING_POINTCUT_METHOD =
-            "execution(@com.wq.freeze.aopeventtracking.lib.EventTracking * *(..)) && @annotation(ann)";
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.EventTracking * *(..)) && @annotation(ann)";
 
     private static final String TRACKING_POINTCUT_CONSTRUCTOR =
-            "execution(@com.wq.freeze.aopeventtracking.lib.EventTracking *.new(..)) && @annotation(ann)";
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.EventTracking *.new(..)) && @annotation(ann)";
 
     private static final String INIT_POINTCUT_METHOD =
-            "execution(@com.wq.freeze.aopeventtracking.lib.Init * *..Application+.onCreate(..))";
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.Init * android.app.Application+.onCreate(..))";
+
+    private static final String ACTIVITY_RESUME_POINTCUT_METHOD =
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.ActivityResume * android.app.Activity+.onResume(..))";
+
+    private static final String ACTIVITY_PAUSE_POINTCUT_METHOD =
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.ActivityPause * android.app.Activity+.onPause(..))";
+
+    private static final String PAGE_RESUME_POINTCUT_METHOD =
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.PageResume * *(..)) && @annotation(ann)";
+
+    private static final String PAGE_PAUSE_POINTCUT_METHOD =
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.PagePause * *(..)) && @annotation(ann)";
+
+    private static final String ON_KILL_PROCESS_POINTCUT_METHOD =
+            "execution(@com.wq.freeze.aopeventtracking.lib.annotations.OnKillProcess * *(..))";
+
 
     @Pointcut(INIT_POINTCUT_METHOD)
     public void methodAnnotatedWithInit() {}
@@ -35,6 +55,22 @@ public class AopEventTracking {
 
     @Pointcut(TRACKING_POINTCUT_CONSTRUCTOR)
     public void constructorAnnotatedWithTracking(EventTracking ann) {}
+
+    @Pointcut(ACTIVITY_RESUME_POINTCUT_METHOD)
+    public void methodAnnotatedWithActivityResume() {}
+
+    @Pointcut(ACTIVITY_PAUSE_POINTCUT_METHOD)
+    public void methodAnnotatedWithActivityPause() {}
+
+    @Pointcut(PAGE_RESUME_POINTCUT_METHOD)
+    public void methodAnnotatedWithPageResume(PageResume ann) {}
+
+    @Pointcut(PAGE_PAUSE_POINTCUT_METHOD)
+    public void methodAnnotatedWithPagePause(PagePause ann) {}
+
+    @Pointcut(ON_KILL_PROCESS_POINTCUT_METHOD)
+    public void methodAnnotatedWithKillProcess() {}
+
 
     @Around("methodAnnotatedWithInit()")
     public Object initJoinPoint(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -79,4 +115,38 @@ public class AopEventTracking {
             AnalyticsHelper.trackingEvent(ann.eventId(), map);
         }
     }
+
+    @After("methodAnnotatedWithActivityResume()")
+    public void activityResumeJoinPoint(JoinPoint point) {
+        AnalyticsHelper.onActivityResume((Activity) point.getThis());
+    }
+
+    @After("methodAnnotatedWithActivityPause()")
+    public void activityPauseJoinPoint(JoinPoint point) {
+        AnalyticsHelper.onActivityPause((Activity) point.getThis());
+    }
+
+    @After("methodAnnotatedWithPageResume(ann)")
+    public void pageResumeJoinPoint(JoinPoint point, PageResume ann) {
+        if (ann.pageName().equals("no_name")) {
+            AnalyticsHelper.onPageResume(point.getThis().getClass().getSimpleName());
+        } else {
+            AnalyticsHelper.onPageResume(ann.pageName());
+        }
+    }
+
+    @After("methodAnnotatedWithPagePause(ann)")
+    public void pagePauseJoinPoint(JoinPoint point, PagePause ann) {
+        if (ann.pageName().equals("no_name")) {
+            AnalyticsHelper.onPagePause(point.getThis().getClass().getSimpleName());
+        } else {
+            AnalyticsHelper.onPagePause(ann.pageName());
+        }
+    }
+
+    @Before("methodAnnotatedWithKillProcess()")
+    public void killPreocessJoinPoint(JoinPoint point) {
+        AnalyticsHelper.onKillProcess();
+    }
+
 }

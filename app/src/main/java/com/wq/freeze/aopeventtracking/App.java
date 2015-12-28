@@ -2,7 +2,7 @@ package com.wq.freeze.aopeventtracking;
 
 import android.app.Application;
 
-import com.wq.freeze.aopeventtracking.lib.Init;
+import com.wq.freeze.aopeventtracking.lib.annotations.Init;
 
 /**
  * Created by wangqi on 2015/12/25.

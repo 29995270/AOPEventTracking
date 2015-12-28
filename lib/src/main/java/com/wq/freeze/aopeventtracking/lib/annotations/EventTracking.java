@@ -1,4 +1,4 @@
-package com.wq.freeze.aopeventtracking.lib;
+package com.wq.freeze.aopeventtracking.lib.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,5 +1,6 @@
 package com.wq.freeze.aopeventtracking.lib;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -34,5 +35,30 @@ public class AnalyticsHelper {
             MobclickAgent.onEvent(sContext, event, args);
         }
 
+    }
+
+    public static void onActivityResume(Activity activity) {
+        Log.v("AAA", "onActivityResume " + activity.getClass().getSimpleName());
+        MobclickAgent.onResume(activity);
+    }
+
+    public static void onActivityPause(Activity activity) {
+        Log.v("AAA", "onActivityPause " + activity.getClass().getSimpleName());
+        MobclickAgent.onPause(activity);
+    }
+
+    public static void onPageResume(String pageName) {
+        Log.v("AAA", "onPageResume " + pageName);
+        MobclickAgent.onPageStart(pageName);
+    }
+
+    public static void onPagePause(String pageName) {
+        Log.v("AAA", "onPagePause " + pageName);
+        MobclickAgent.onPageEnd(pageName);
+    }
+
+    public static void onKillProcess() {
+        Log.v("AAA", "onKillProcess");
+        MobclickAgent.onKillProcess(sContext);
     }
 }
